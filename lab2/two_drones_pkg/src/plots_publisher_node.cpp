@@ -75,6 +75,9 @@ class PlotsPublisherNode : public rclcpp::Node {
 
         // TODO: fill in here
 
+        rclcpp::Time current_time = parent->now();
+        transform = parent->tf_buffer_->lookupTransform(ref_frame, dest_frame
+        , current_time, rclcpp::Duration::from_seconds(0.1));
         // ~~~~~~~~~~~~~~~~~~~~~~~~  END OF EDIT SECTION ~~~~~~~~~~~~~~~~~~~~~~~~~
         while (poses.size() >= buffer_size) poses.pop_front();
 
@@ -147,7 +150,7 @@ class PlotsPublisherNode : public rclcpp::Node {
     markers_pub = create_publisher<visualization_msgs::msg::MarkerArray>("visuals", 0);
 
     RCLCPP_INFO_STREAM(get_logger(), "about to start heartbeat");
-    heartbeat = create_timer(this,
+    heartbeat = rclcpp::create_timer(this,
                              get_clock(),
                              rclcpp::Duration::from_seconds(0.02),
                              std::bind(&PlotsPublisherNode::onPublish, this));
